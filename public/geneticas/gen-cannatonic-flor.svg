@@ -1,0 +1,15 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="900" fill="#F2F6F6"/>
+<rect x="60" y="60" width="1080" height="780" rx="36" fill="#FCFEFE" stroke="#D7DEE4" stroke-width="8"/>
+<circle cx="600" cy="430" r="250" fill="#E2EFE7"/>
+<circle cx="600" cy="430" r="174" fill="#8DB49D"/>
+<circle cx="600" cy="430" r="98" fill="#486255"/>
+<path d="M600 146C665 238 698 290 698 350C698 404 654 448 600 448C546 448 502 404 502 350C502 290 535 238 600 146Z" fill="#A6CFB4"/>
+<path d="M336 292C438 302 500 326 536 370C571 414 560 476 513 507C466 538 399 527 364 483C329 439 324 389 336 292Z" fill="#A6CFB4"/>
+<path d="M864 292C762 302 700 326 664 370C629 414 640 476 687 507C734 538 801 527 836 483C871 439 876 389 864 292Z" fill="#A6CFB4"/>
+<path d="M434 648C503 566 551 523 605 513C660 502 713 540 721 593C730 646 691 699 636 708C581 717 531 694 434 648Z" fill="#A6CFB4"/>
+<path d="M766 648C697 566 649 523 595 513C540 502 487 540 479 593C470 646 509 699 564 708C619 717 669 694 766 648Z" fill="#A6CFB4"/>
+<path d="M600 314L636 409L738 409L655 472L687 572L600 511L513 572L545 472L462 409L564 409L600 314Z" fill="#E3BE60"/>
+<rect x="130" y="690" width="440" height="94" rx="20" fill="#1E2328" fill-opacity="0.88"/>
+<text x="166" y="744" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="34" font-weight="700">GEN_CANNATONIC</text>
+</svg>

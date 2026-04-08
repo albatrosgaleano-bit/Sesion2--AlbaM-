@@ -1,0 +1,636 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  QUALITY
+  GROWER
+  PROCESSOR
+  VIEWER
+}
+
+enum LotOriginType {
+  CLONE
+  MOTHER_PLANT
+  SEED
+  PURCHASED_MATERIAL
+  INTERNAL_TRANSFER
+  OTHER
+}
+
+enum LotStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  DISCARDED
+  ARCHIVED
+}
+
+enum PhaseType {
+  CLONES
+  MOTHERS
+  GERMINATION
+  VEGETATIVE
+  FLOWERING
+  HARVEST
+  DRYING
+  CURING
+  PROCESSING
+  EXTRACTION
+  FINAL_PRODUCT
+  CLOSED
+}
+
+enum TraceabilityEventType {
+  LOT_CREATED
+  LOT_UPDATED
+  PHASE_CHANGED
+  SENSOR_RECORDED
+  IRRIGATION_RECORDED
+  INCIDENT_RECORDED
+  INCIDENT_RESOLVED
+  HARVEST_CREATED
+  PROCESSING_CREATED
+  FINAL_PRODUCT_CREATED
+  QR_GENERATED
+  ATTACHMENT_ADDED
+  EXPORT_TRIGGERED
+  EXPORT_COMPLETED
+  EXPORT_FAILED
+  NOTE_ADDED
+}
+
+enum SourceModule {
+  LOTS
+  PHASES
+  SENSORS
+  IRRIGATION
+  INCIDENTS
+  HARVEST
+  PROCESSING
+  FINAL_PRODUCTS
+  QR
+  EXPORTS
+  SYSTEM
+}
+
+enum SensorType {
+  AMBIENT_TEMPERATURE
+  AMBIENT_HUMIDITY
+  SUBSTRATE_MOISTURE
+  SUBSTRATE_TEMPERATURE
+  LIGHT_PAR
+  CO2
+  PH
+  EC
+  WATER_TEMPERATURE
+  OTHER
+}
+
+enum SensorMetricType {
+  TEMPERATURE_C
+  HUMIDITY_PERCENT
+  MOISTURE_PERCENT
+  PAR
+  PPFD
+  DLI
+  CO2_PPM
+  PH
+  EC_MS_CM
+  WATER_TEMP_C
+  TEXT_NOTE
+  OTHER
+}
+
+enum IrrigationMethod {
+  MANUAL
+  AUTOMATIC
+  DRIP
+  FLOOD
+  FERTIGATION
+  OTHER
+}
+
+enum IncidentCategory {
+  PEST
+  DISEASE
+  IRRIGATION
+  CLIMATE
+  LIGHTING
+  NUTRITION
+  SENSOR
+  TRACEABILITY
+  PROCESSING
+  QUALITY
+  OTHER
+}
+
+enum SeverityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum BatchStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum ProcessingType {
+  DRYING
+  CURING
+  TRIMMING
+  EXTRACTION_CO2
+  EXTRACTION_ETHANOL
+  EXTRACTION_ROSIN
+  PACKAGING
+  OTHER
+}
+
+enum ProductForm {
+  DRIED_FLOWER
+  EXTRACT
+  OIL
+  DISTILLATE
+  ISOLATE
+  PRE_ROLL
+  BIOMASS
+  OTHER
+}
+
+enum FinalProductStatus {
+  DRAFT
+  RELEASED
+  QUARANTINED
+  REJECTED
+  ARCHIVED
+}
+
+enum QREntityType {
+  VARIETY
+  LOT
+  HARVEST_BATCH
+  PROCESSING_BATCH
+  FINAL_PRODUCT
+}
+
+enum QRFormat {
+  PNG
+  SVG
+  PDF
+}
+
+enum AttachmentEntityType {
+  LOT
+  HARVEST_BATCH
+  PROCESSING_BATCH
+  FINAL_PRODUCT
+  INCIDENT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  PHASE_CHANGE
+  RESOLVE
+  EXPORT
+  LOGIN
+  LOGOUT
+  PRINT_QR
+}
+
+enum AuditEntityType {
+  USER
+  VARIETY
+  LOT
+  PHASE_TRANSITION
+  TRACEABILITY_EVENT
+  SENSOR_DEVICE
+  SENSOR_READING
+  IRRIGATION_LOG
+  INCIDENT
+  HARVEST_BATCH
+  PROCESSING_BATCH
+  FINAL_PRODUCT
+  QR_LABEL
+  ATTACHMENT
+  EXPORT_JOB
+  SYSTEM_SETTING
+}
+
+enum ExportType {
+  GOOGLE_SHEETS
+}
+
+enum ExportScope {
+  FULL
+  DATE_RANGE
+  LOT
+}
+
+enum ExportStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id             String               @id @default(cuid())
+  username       String               @unique
+  passwordHash   String
+  fullName       String?
+  email          String?
+  role           UserRole             @default(VIEWER)
+  isActive       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  responsibleLots      Lot[]                @relation("ResponsibleLots")
+  phaseTransitions     PhaseTransition[]
+  traceabilityEvents   TraceabilityEvent[]
+  irrigationLogs       IrrigationLog[]
+  incidents            Incident[]
+  harvestBatches       HarvestBatch[]
+  processingBatches    ProcessingBatch[]
+  finalProducts        FinalProduct[]
+  attachments          Attachment[]
+  auditLogs            AuditLog[]
+  requestedExports     ExportJob[]
+}
+
+model Variety {
+  id             String      @id @default(cuid())
+  name           String      @unique
+  cultivarCode   String?
+  description    String?
+  flowerImageUrl String?
+  thcPercent     Float?
+  cbdPercent     Float?
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  lots           Lot[]
+  qrLabels       QRLabel[]
+}
+
+model Lot {
+  id                  String                @id @default(cuid())
+  code                String                @unique
+  name                String?
+  varietyId           String?
+  originType          LotOriginType
+  originReference     String?
+  status              LotStatus             @default(ACTIVE)
+  currentPhase        PhaseType
+  phaseStartedAt      DateTime?
+  startedAt           DateTime              @default(now())
+  closedAt            DateTime?
+  responsibleUserId   String?
+  notes               String?
+  motherLotId         String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  variety            Variety?               @relation(fields: [varietyId], references: [id])
+  responsibleUser    User?                  @relation("ResponsibleLots", fields: [responsibleUserId], references: [id])
+  motherLot          Lot?                   @relation("LotLineage", fields: [motherLotId], references: [id])
+  derivedLots        Lot[]                  @relation("LotLineage")
+  phaseTransitions   PhaseTransition[]
+  events             TraceabilityEvent[]
+  sensorReadings     SensorReading[]
+  irrigationLogs     IrrigationLog[]
+  incidents          Incident[]
+  harvestLots        HarvestLot[]
+  qrLabels           QRLabel[]
+  attachments        Attachment[]
+  exportJobs         ExportJob[]
+
+  @@index([currentPhase])
+  @@index([status])
+  @@index([varietyId])
+}
+
+model PhaseTransition {
+  id               String      @id @default(cuid())
+  lotId            String
+  fromPhase        PhaseType?
+  toPhase          PhaseType
+  effectiveAt      DateTime    @default(now())
+  operatorUserId   String
+  reason           String?
+  notes            String?
+  createdAt        DateTime    @default(now())
+
+  lot              Lot         @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  operator         User        @relation(fields: [operatorUserId], references: [id])
+
+  @@index([lotId, effectiveAt])
+}
+
+model TraceabilityEvent {
+  id               String                @id @default(cuid())
+  lotId            String?
+  eventType        TraceabilityEventType
+  phase            PhaseType?
+  title            String
+  description      String?
+  eventAt          DateTime              @default(now())
+  operatorUserId   String?
+  sourceModule     SourceModule
+  sourceEntityType String?
+  sourceEntityId   String?
+  isImmutable      Boolean               @default(true)
+  metadata         Json?
+  createdAt        DateTime              @default(now())
+
+  lot              Lot?                  @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  operator         User?                 @relation(fields: [operatorUserId], references: [id])
+
+  @@index([lotId, eventAt])
+  @@index([sourceModule, eventAt])
+}
+
+model SensorDevice {
+  id               String         @id @default(cuid())
+  code             String         @unique
+  name             String
+  type             SensorType
+  metric           SensorMetricType
+  unit             String?
+  location         String?
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  readings         SensorReading[]
+}
+
+model SensorReading {
+  id               String            @id @default(cuid())
+  sensorId         String?
+  lotId            String?
+  phase            PhaseType?
+  metric           SensorMetricType
+  numericValue     Float?
+  textValue        String?
+  unit             String?
+  takenAt          DateTime          @default(now())
+  source           String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+
+  sensor           SensorDevice?     @relation(fields: [sensorId], references: [id], onDelete: SetNull)
+  lot              Lot?              @relation(fields: [lotId], references: [id], onDelete: SetNull)
+
+  @@index([lotId, takenAt])
+  @@index([sensorId, takenAt])
+}
+
+model IrrigationLog {
+  id               String            @id @default(cuid())
+  lotId            String
+  operatorUserId   String?
+  method           IrrigationMethod
+  startedAt        DateTime          @default(now())
+  endedAt          DateTime?
+  waterLiters      Float?
+  ec               Float?
+  ph               Float?
+  nutrientRecipe   String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+
+  lot              Lot               @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  operator         User?             @relation(fields: [operatorUserId], references: [id])
+
+  @@index([lotId, startedAt])
+}
+
+model Incident {
+  id               String            @id @default(cuid())
+  lotId            String?
+  operatorUserId   String?
+  category         IncidentCategory
+  severity         SeverityLevel     @default(MEDIUM)
+  status           IncidentStatus    @default(OPEN)
+  title            String
+  description      String?
+  detectedAt       DateTime          @default(now())
+  resolvedAt       DateTime?
+  resolutionNotes  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  lot              Lot?              @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  operator         User?             @relation(fields: [operatorUserId], references: [id])
+  attachments      Attachment[]
+
+  @@index([lotId, status])
+  @@index([category, status])
+}
+
+model HarvestBatch {
+  id               String            @id @default(cuid())
+  code             String            @unique
+  harvestedAt      DateTime          @default(now())
+  operatorUserId   String?
+  status           BatchStatus       @default(DRAFT)
+  wetWeightKg      Float?
+  dryWeightKg      Float?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  operator         User?             @relation(fields: [operatorUserId], references: [id])
+  lots             HarvestLot[]
+  processingInputs ProcessingInput[]
+  qrLabels         QRLabel[]
+  attachments      Attachment[]
+}
+
+model HarvestLot {
+  id               String           @id @default(cuid())
+  harvestBatchId   String
+  lotId            String
+  harvestedWeightKg Float?
+  notes            String?
+
+  harvestBatch     HarvestBatch     @relation(fields: [harvestBatchId], references: [id], onDelete: Cascade)
+  lot              Lot              @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@unique([harvestBatchId, lotId])
+  @@index([lotId])
+}
+
+model ProcessingBatch {
+  id               String            @id @default(cuid())
+  code             String            @unique
+  processingType   ProcessingType
+  startedAt        DateTime          @default(now())
+  endedAt          DateTime?
+  operatorUserId   String?
+  status           BatchStatus       @default(DRAFT)
+  inputWeightKg    Float?
+  outputWeightKg   Float?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  operator         User?             @relation(fields: [operatorUserId], references: [id])
+  inputs           ProcessingInput[]
+  finalProducts    FinalProduct[]
+  qrLabels         QRLabel[]
+  attachments      Attachment[]
+}
+
+model ProcessingInput {
+  id                String           @id @default(cuid())
+  processingBatchId String
+  harvestBatchId    String
+  inputWeightKg     Float?
+  notes             String?
+
+  processingBatch   ProcessingBatch  @relation(fields: [processingBatchId], references: [id], onDelete: Cascade)
+  harvestBatch      HarvestBatch     @relation(fields: [harvestBatchId], references: [id], onDelete: Cascade)
+
+  @@unique([processingBatchId, harvestBatchId])
+  @@index([harvestBatchId])
+}
+
+model FinalProduct {
+  id                String             @id @default(cuid())
+  code              String             @unique
+  name              String
+  form              ProductForm
+  status            FinalProductStatus @default(DRAFT)
+  processingBatchId String
+  operatorUserId    String?
+  packageSize       Float?
+  packageUnit       String?
+  quantityProduced  Float?
+  releasedAt        DateTime?
+  notes             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  processingBatch   ProcessingBatch    @relation(fields: [processingBatchId], references: [id], onDelete: Cascade)
+  operator          User?              @relation(fields: [operatorUserId], references: [id])
+  qrLabels          QRLabel[]
+  attachments       Attachment[]
+
+  @@index([processingBatchId])
+  @@index([status])
+}
+
+model QRLabel {
+  id                String           @id @default(cuid())
+  code              String           @unique
+  entityType        QREntityType
+  phase             PhaseType?
+  varietyId         String?
+  lotId             String?
+  harvestBatchId    String?
+  processingBatchId String?
+  finalProductId    String?
+  routePath         String
+  format            QRFormat         @default(SVG)
+  generatedAt       DateTime         @default(now())
+  printedAt         DateTime?
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+
+  variety           Variety?         @relation(fields: [varietyId], references: [id], onDelete: SetNull)
+  lot               Lot?             @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  harvestBatch      HarvestBatch?    @relation(fields: [harvestBatchId], references: [id], onDelete: SetNull)
+  processingBatch   ProcessingBatch? @relation(fields: [processingBatchId], references: [id], onDelete: SetNull)
+  finalProduct      FinalProduct?    @relation(fields: [finalProductId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, generatedAt])
+  @@index([varietyId, generatedAt])
+  @@index([lotId, phase, generatedAt])
+}
+
+model Attachment {
+  id                String               @id @default(cuid())
+  fileName          String
+  filePath          String
+  mimeType          String?
+  entityType        AttachmentEntityType
+  lotId             String?
+  harvestBatchId    String?
+  processingBatchId String?
+  finalProductId    String?
+  incidentId        String?
+  uploadedById      String?
+  uploadedAt        DateTime             @default(now())
+
+  lot               Lot?                 @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  harvestBatch      HarvestBatch?        @relation(fields: [harvestBatchId], references: [id], onDelete: SetNull)
+  processingBatch   ProcessingBatch?     @relation(fields: [processingBatchId], references: [id], onDelete: SetNull)
+  finalProduct      FinalProduct?        @relation(fields: [finalProductId], references: [id], onDelete: SetNull)
+  incident          Incident?            @relation(fields: [incidentId], references: [id], onDelete: SetNull)
+  uploadedBy        User?                @relation(fields: [uploadedById], references: [id])
+}
+
+model AuditLog {
+  id                String            @id @default(cuid())
+  actorUserId       String?
+  action            AuditAction
+  entityType        AuditEntityType
+  entityId          String
+  sourceModule      SourceModule
+  summary           String
+  beforeJson        Json?
+  afterJson         Json?
+  createdAt         DateTime          @default(now())
+
+  actor             User?             @relation(fields: [actorUserId], references: [id])
+
+  @@index([entityType, entityId, createdAt])
+  @@index([sourceModule, createdAt])
+}
+
+model ExportJob {
+  id                String           @id @default(cuid())
+  exportType        ExportType       @default(GOOGLE_SHEETS)
+  scope             ExportScope
+  status            ExportStatus     @default(PENDING)
+  requestedById     String?
+  lotId             String?
+  dateFrom          DateTime?
+  dateTo            DateTime?
+  googleSheetId     String?
+  targetSheetName   String?
+  rowCount          Int?
+  errorMessage      String?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  requestedBy       User?            @relation(fields: [requestedById], references: [id])
+  lot               Lot?             @relation(fields: [lotId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([lotId])
+}

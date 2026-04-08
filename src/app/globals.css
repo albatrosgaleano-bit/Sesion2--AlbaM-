@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --color-background: #f7faf8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f6f8;
+  --color-border: #d7dee4;
+  --color-border-strong: #a7b0b8;
+  --color-text-primary: #1e2328;
+  --color-text-secondary: #46505a;
+  --color-text-muted: #63707d;
+  --color-primary-700: #1f6b45;
+  --color-primary-600: #2c7a52;
+  --color-primary-500: #3d8b5f;
+  --color-primary-100: #dcefe4;
+  --color-primary-50: #f3f9f5;
+  --color-success: #2e7d32;
+  --color-success-bg: #eaf6ec;
+  --color-success-border: #bee2c1;
+  --color-warning: #b7791f;
+  --color-warning-bg: #fff6e5;
+  --color-warning-border: #efd29b;
+  --color-danger: #c53030;
+  --color-danger-bg: #fdecec;
+  --color-danger-border: #e9b2b2;
+  --color-info: #2563eb;
+  --color-info-bg: #eaf2ff;
+  --color-info-border: #bfcef5;
+  --shadow-card: 0 18px 48px rgba(31, 49, 64, 0.08);
+}
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top right, rgba(61, 139, 95, 0.14), transparent 28%),
+    linear-gradient(180deg, #fcfefd 0%, #f7faf8 46%, #eff4f2 100%);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(44, 122, 82, 0.18);
+}

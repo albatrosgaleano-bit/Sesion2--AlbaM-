@@ -1,0 +1,15 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="900" fill="#EEF4EF"/>
+<rect x="60" y="60" width="1080" height="780" rx="36" fill="#FBFDFC" stroke="#D7DEE4" stroke-width="8"/>
+<circle cx="610" cy="438" r="242" fill="#DCEFE4"/>
+<circle cx="610" cy="438" r="170" fill="#7FA36E"/>
+<circle cx="610" cy="438" r="104" fill="#566B43"/>
+<path d="M610 150C681 235 717 287 717 345C717 404 669 451 610 451C551 451 503 404 503 345C503 287 539 235 610 150Z" fill="#A2C58F"/>
+<path d="M350 266C450 280 507 306 540 353C574 402 562 468 513 501C464 533 396 520 362 469C329 418 328 367 350 266Z" fill="#A2C58F"/>
+<path d="M870 266C770 280 713 306 680 353C646 402 658 468 707 501C756 533 824 520 858 469C891 418 892 367 870 266Z" fill="#A2C58F"/>
+<path d="M422 634C487 557 535 519 592 511C649 503 705 541 713 600C721 659 679 714 622 722C565 730 516 703 422 634Z" fill="#A2C58F"/>
+<path d="M798 634C733 557 685 519 628 511C571 503 515 541 507 600C499 659 541 714 598 722C655 730 704 703 798 634Z" fill="#A2C58F"/>
+<path d="M610 318L651 430L770 430L674 498L710 613L610 545L510 613L546 498L450 430L569 430L610 318Z" fill="#E7C86A" fill-opacity="0.92"/>
+<rect x="130" y="690" width="420" height="94" rx="20" fill="#1E2328" fill-opacity="0.88"/>
+<text x="166" y="744" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="34" font-weight="700">GEN_PACHAMAMA</text>
+</svg>
