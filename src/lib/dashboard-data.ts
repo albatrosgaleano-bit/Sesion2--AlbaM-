@@ -47,21 +47,33 @@ export async function getDashboardData() {
 
 export async function getLotsOverview() {
   try {
-    const lots = await prisma.lot.findMany({
-      include: {
-        variety: true,
-        responsibleUser: true,
-        incidents: {
-          where: { status: { in: [IncidentStatus.OPEN, IncidentStatus.IN_PROGRESS] } },
+    const [lots, varieties, users] = await Promise.all([
+      prisma.lot.findMany({
+        include: {
+          variety: true,
+          responsibleUser: true,
+          incidents: {
+            where: { status: { in: [IncidentStatus.OPEN, IncidentStatus.IN_PROGRESS] } },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    });
+        orderBy: { createdAt: "desc" },
+        take: 20,
+      }),
+      prisma.variety.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, cultivarCode: true },
+        orderBy: { name: "asc" },
+      }),
+      prisma.user.findMany({
+        where: { isActive: true },
+        select: { id: true, username: true, fullName: true },
+        orderBy: [{ fullName: "asc" }, { username: "asc" }],
+      }),
+    ]);
 
-    return { connected: true, lots };
+    return { connected: true, lots, varieties, users };
   } catch {
-    return { connected: false, lots: [] };
+    return { connected: false, lots: [], varieties: [], users: [] };
   }
 }
 

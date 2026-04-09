@@ -106,7 +106,7 @@ async function main() {
 
   const pachamamaClones = await prisma.lot.create({
     data: {
-      code: "LT-PACH-CLN-001",
+      code: "PM-GEN-PACHAMAMA-26-1-C-1",
       name: "Pachamama clones",
       varietyId: pachamama.id,
       originType: LotOriginType.CLONE,
@@ -123,11 +123,11 @@ async function main() {
 
   const pachamamaVegetative = await prisma.lot.create({
     data: {
-      code: "LT-PACH-VEG-001",
+      code: "PM-GEN-PACHAMAMA-26-1-C-1-V",
       name: "Pachamama vegetativo",
       varietyId: pachamama.id,
       originType: LotOriginType.INTERNAL_TRANSFER,
-      originReference: "Derivado de LT-PACH-CLN-001",
+      originReference: "Derivado de PM-GEN-PACHAMAMA-26-1-C-1",
       currentPhase: PhaseType.VEGETATIVE,
       status: LotStatus.COMPLETED,
       phaseStartedAt: new Date("2026-03-11T08:00:00.000Z"),
@@ -141,11 +141,11 @@ async function main() {
 
   const pachamamaFlowering = await prisma.lot.create({
     data: {
-      code: "LT-PACH-FLW-001",
+      code: "PM-GEN-PACHAMAMA-26-1-C-1-VF",
       name: "Pachamama floracion",
       varietyId: pachamama.id,
       originType: LotOriginType.INTERNAL_TRANSFER,
-      originReference: "Derivado de LT-PACH-VEG-001",
+      originReference: "Derivado de PM-GEN-PACHAMAMA-26-1-C-1-V",
       currentPhase: PhaseType.FLOWERING,
       status: LotStatus.COMPLETED,
       phaseStartedAt: new Date("2026-03-25T08:00:00.000Z"),
@@ -159,11 +159,11 @@ async function main() {
 
   const pachamamaHarvest = await prisma.lot.create({
     data: {
-      code: "LT-PACH-HRV-001",
+      code: "PM-GEN-PACHAMAMA-26-1-C-1-VFC",
       name: "Pachamama cosecha",
       varietyId: pachamama.id,
       originType: LotOriginType.INTERNAL_TRANSFER,
-      originReference: "Derivado de LT-PACH-FLW-001",
+      originReference: "Derivado de PM-GEN-PACHAMAMA-26-1-C-1-VF",
       currentPhase: PhaseType.HARVEST,
       status: LotStatus.COMPLETED,
       phaseStartedAt: new Date("2026-04-19T08:00:00.000Z"),
@@ -177,11 +177,11 @@ async function main() {
 
   const pachamamaExtraction = await prisma.lot.create({
     data: {
-      code: "LT-PACH-EXT-001",
+      code: "PM-GEN-PACHAMAMA-26-1-C-1-VFCE",
       name: "Pachamama extraccion",
       varietyId: pachamama.id,
       originType: LotOriginType.INTERNAL_TRANSFER,
-      originReference: "Derivado de LT-PACH-HRV-001",
+      originReference: "Derivado de PM-GEN-PACHAMAMA-26-1-C-1-VFC",
       currentPhase: PhaseType.EXTRACTION,
       status: LotStatus.ACTIVE,
       phaseStartedAt: new Date("2026-04-21T08:00:00.000Z"),
@@ -194,7 +194,7 @@ async function main() {
 
   const cannatonicLot = await prisma.lot.create({
     data: {
-      code: "LT-CAN-VEG-001",
+      code: "PM-GEN-CANNATONIC-26-1-C-1-V",
       name: "Cannatonic vegetativo",
       varietyId: cannatonic.id,
       originType: LotOriginType.SEED,
@@ -406,7 +406,7 @@ async function main() {
       status: BatchStatus.IN_PROGRESS,
       inputWeightKg: 18.2,
       outputWeightKg: 3.4,
-      notes: "Batch de extraccion asociado al lote LT-PACH-EXT-001.",
+      notes: "Batch de extraccion asociado al lote PM-GEN-PACHAMAMA-26-1-C-1-VFCE.",
       inputs: {
         create: {
           harvestBatchId: harvestBatch.id,

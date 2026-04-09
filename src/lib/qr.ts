@@ -2,30 +2,20 @@ import { PhaseType, QREntityType } from "@prisma/client";
 import type { Route } from "next";
 import QRCode from "qrcode";
 
+import { buildMotherLotCode, extractMotherLotSequence, getGeneticIdentifier } from "@/lib/lot-code";
 import { prisma } from "@/lib/prisma";
 
 const DEFAULT_APP_URL = "http://localhost:3000";
 
 type LotLineageNode = {
   id: string;
+  code: string;
   varietyId: string | null;
   motherLotId: string | null;
   currentPhase: PhaseType;
   startedAt: Date;
   createdAt: Date;
 };
-
-function getGeneticIdentifier(variety: { cultivarCode: string | null; name: string }) {
-  return (variety.cultivarCode ?? variety.name)
-    .trim()
-    .replace(/[^A-Za-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .toUpperCase();
-}
-
-function getLotYearCode(date: Date) {
-  return date.getUTCFullYear().toString().slice(-2);
-}
 
 function appendPhaseSuffix(baseCode: string, phase: PhaseType) {
   const suffixByPhase: Partial<Record<PhaseType, string>> = {
@@ -53,6 +43,7 @@ async function getLotLineage(lot: LotLineageNode) {
       where: { id: currentMotherLotId },
       select: {
         id: true,
+        code: true,
         varietyId: true,
         motherLotId: true,
         currentPhase: true,
@@ -73,6 +64,12 @@ async function getLotLineage(lot: LotLineageNode) {
 }
 
 async function getRootLotSequence(rootLot: LotLineageNode) {
+  const sequenceFromCode = extractMotherLotSequence(rootLot.code);
+
+  if (sequenceFromCode) {
+    return sequenceFromCode.sequence;
+  }
+
   if (!rootLot.varietyId) {
     throw new Error("El lote no tiene genetica asociada");
   }
@@ -148,7 +145,7 @@ async function buildLotQrCode(lot: LotLineageNode & { variety: { cultivarCode: s
     lineage.find((candidate) => candidate.currentPhase === PhaseType.CLONES) ??
     (!hasExplicitMotherLot ? rootLot : lot.currentPhase === PhaseType.CLONES ? lot : null);
   const motherSequence = await getRootLotSequence(motherLot);
-  const motherCode = `PM-${getGeneticIdentifier(lot.variety)}-${getLotYearCode(motherLot.startedAt)}-${motherSequence}`;
+  const motherCode = buildMotherLotCode(lot.variety, motherLot.startedAt, motherSequence);
 
   if (lot.currentPhase === PhaseType.MOTHERS) {
     return motherCode;
