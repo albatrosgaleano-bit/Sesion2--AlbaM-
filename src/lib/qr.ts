@@ -30,9 +30,9 @@ function getLotYearCode(date: Date) {
 function appendPhaseSuffix(baseCode: string, phase: PhaseType) {
   const suffixByPhase: Partial<Record<PhaseType, string>> = {
     VEGETATIVE: "-V",
-    FLOWERING: "F",
-    HARVEST: "C",
-    EXTRACTION: "E",
+    FLOWERING: "-VF",
+    HARVEST: "-VFC",
+    EXTRACTION: "-VFCE",
   };
 
   const suffix = suffixByPhase[phase];
