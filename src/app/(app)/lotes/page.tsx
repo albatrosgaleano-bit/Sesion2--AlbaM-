@@ -5,40 +5,58 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SectionCard } from "@/components/ui/section-card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { getLotsOverview } from "@/lib/dashboard-data";
+import { prisma } from "@/lib/prisma";
 
 export default async function LotsPage() {
-  const { connected, lots, varieties, users, motherLots } = await getLotsOverview();
+  const { connected, lots } = await getLotsOverview();
+  const [varieties, users, motherLots] = connected
+    ? await Promise.all([
+        prisma.variety.findMany({
+          where: { isActive: true },
+          orderBy: { name: "asc" },
+          select: { id: true, name: true, cultivarCode: true },
+        }),
+        prisma.user.findMany({
+          where: { isActive: true },
+          orderBy: [{ fullName: "asc" }, { username: "asc" }],
+          select: { id: true, username: true, fullName: true },
+        }),
+        prisma.lot.findMany({
+          where: { motherLotId: null },
+          select: { varietyId: true, startedAt: true },
+        }),
+      ])
+    : [[], [], []];
+
   const defaultDate = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-6">
       <section>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-primary-700)]">Modulo de lotes</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">Lotes y continuidad de trazabilidad</h1>
-          </div>
-          <NewLotForm defaultDate={defaultDate} varieties={varieties} users={users} motherLots={motherLots} />
-        </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-primary-700)]">Modulo de lotes</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">Lotes y continuidad de trazabilidad</h1>
         <p className="mt-3 max-w-3xl text-base leading-7 text-[var(--color-text-secondary)]">
           Base inicial para CRUD, filtros, cambios de fase y timeline por lote. La UI sigue el enfoque de tablas y paneles definido en `DESIGN.md`.
         </p>
       </section>
 
       {connected ? (
-        <section className="grid gap-4 xl:grid-cols-3">
-          {lots.slice(0, 3).map((lot) => (
-            <LotSummaryPanel
-              key={lot.id}
-              id={lot.id}
-              code={lot.code}
-              phase={lot.currentPhase}
-              status={lot.status}
-              variety={lot.variety?.name ?? "Sin variedad"}
-              responsible={lot.responsibleUser?.fullName ?? lot.responsibleUser?.username ?? "Sin asignar"}
-              incidents={lot.incidents.length}
-            />
-          ))}
+        <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="grid gap-4 xl:grid-cols-3">
+            {lots.slice(0, 3).map((lot) => (
+              <LotSummaryPanel
+                key={lot.id}
+                id={lot.id}
+                code={lot.code}
+                phase={lot.currentPhase}
+                status={lot.status}
+                variety={lot.variety?.name ?? "Sin variedad"}
+                responsible={lot.responsibleUser?.fullName ?? lot.responsibleUser?.username ?? "Sin asignar"}
+                incidents={lot.incidents.length}
+              />
+            ))}
+          </div>
+          <NewLotForm defaultDate={defaultDate} varieties={varieties} users={users} motherLots={motherLots} />
         </section>
       ) : null}
 
