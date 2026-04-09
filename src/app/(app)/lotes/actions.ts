@@ -50,6 +50,7 @@ export async function createLotAction(formData: FormData) {
       where: {
         varietyId,
         motherLotId: null,
+        currentPhase: PhaseType.MOTHERS,
         startedAt: {
           gte: new Date(Date.UTC(startedAt.getUTCFullYear(), 0, 1)),
           lt: new Date(Date.UTC(startedAt.getUTCFullYear() + 1, 0, 1)),

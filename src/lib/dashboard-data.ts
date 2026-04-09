@@ -1,4 +1,4 @@
-import { IncidentStatus, LotStatus } from "@prisma/client";
+import { IncidentStatus, LotStatus, PhaseType } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 
@@ -47,7 +47,7 @@ export async function getDashboardData() {
 
 export async function getLotsOverview() {
   try {
-    const [lots, varieties, users] = await Promise.all([
+    const [lots, varieties, users, motherLots] = await Promise.all([
       prisma.lot.findMany({
         include: {
           variety: true,
@@ -69,11 +69,21 @@ export async function getLotsOverview() {
         select: { id: true, username: true, fullName: true },
         orderBy: [{ fullName: "asc" }, { username: "asc" }],
       }),
+      prisma.lot.findMany({
+        where: {
+          motherLotId: null,
+          currentPhase: PhaseType.MOTHERS,
+        },
+        select: {
+          varietyId: true,
+          startedAt: true,
+        },
+      }),
     ]);
 
-    return { connected: true, lots, varieties, users };
+    return { connected: true, lots, varieties, users, motherLots };
   } catch {
-    return { connected: false, lots: [], varieties: [], users: [] };
+    return { connected: false, lots: [], varieties: [], users: [], motherLots: [] };
   }
 }
 
