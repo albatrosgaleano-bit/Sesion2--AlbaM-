@@ -1,7 +1,7 @@
 import { QREntityType } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
-import { renderQrSvg, getQrTargetUrl } from "@/lib/qr";
+import { ensureVarietyQr, getQrTargetUrl, renderQrSvg } from "@/lib/qr";
 
 export async function getGeneticsOverview() {
   const genetics = await prisma.variety.findMany({
@@ -25,7 +25,7 @@ export async function getGeneticsOverview() {
 
   return Promise.all(
     genetics.map(async (genetic) => {
-      const currentLabel = genetic.qrLabels[0] ?? null;
+      const currentLabel = await ensureVarietyQr(genetic.id);
 
       return {
         genetic,
@@ -63,7 +63,7 @@ export async function getGeneticDetail(varietyId: string) {
     return null;
   }
 
-  const label = genetic.qrLabels[0] ?? null;
+  const label = await ensureVarietyQr(genetic.id);
 
   return {
     genetic,

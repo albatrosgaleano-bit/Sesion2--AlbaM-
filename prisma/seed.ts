@@ -434,14 +434,14 @@ async function main() {
   await prisma.qRLabel.createMany({
     data: [
       {
-        code: "QR-GEN-PACHAMAMA",
+        code: "GEN-PACHAMAMA",
         entityType: QREntityType.VARIETY,
         varietyId: pachamama.id,
         routePath: `/geneticas/${pachamama.id}`,
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-PACH-CLN-001-CLONES",
+        code: "PM-GEN-PACHAMAMA-26-1-C-1",
         entityType: QREntityType.LOT,
         phase: PhaseType.CLONES,
         lotId: pachamamaClones.id,
@@ -449,7 +449,7 @@ async function main() {
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-PACH-VEG-001-VEGETATIVE",
+        code: "PM-GEN-PACHAMAMA-26-1-C-1-V",
         entityType: QREntityType.LOT,
         phase: PhaseType.VEGETATIVE,
         lotId: pachamamaVegetative.id,
@@ -457,7 +457,7 @@ async function main() {
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-PACH-FLW-001-FLOWERING",
+        code: "PM-GEN-PACHAMAMA-26-1-C-1-VF",
         entityType: QREntityType.LOT,
         phase: PhaseType.FLOWERING,
         lotId: pachamamaFlowering.id,
@@ -465,7 +465,7 @@ async function main() {
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-PACH-HRV-001-HARVEST",
+        code: "PM-GEN-PACHAMAMA-26-1-C-1-VFC",
         entityType: QREntityType.LOT,
         phase: PhaseType.HARVEST,
         lotId: pachamamaHarvest.id,
@@ -473,7 +473,7 @@ async function main() {
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-PACH-EXT-001-EXTRACTION",
+        code: "PM-GEN-PACHAMAMA-26-1-C-1-VFCE",
         entityType: QREntityType.LOT,
         phase: PhaseType.EXTRACTION,
         lotId: pachamamaExtraction.id,
@@ -481,7 +481,7 @@ async function main() {
         format: QRFormat.SVG,
       },
       {
-        code: "QR-LT-CAN-VEG-001-VEGETATIVE",
+        code: "PM-GEN-CANNATONIC-26-1-C-1-V",
         entityType: QREntityType.LOT,
         phase: PhaseType.VEGETATIVE,
         lotId: cannatonicLot.id,
