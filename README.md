@@ -1,4 +1,4 @@
-# 🌿 Botanic Precision | Trazabilidad Integral
+# 🌿 Botanic Precision | Trazabilidad Integral | Trabajo hecho por Alba Mª G. Galeano.
 
 ![Botanic Precision Header](https://raw.githubusercontent.com/fjferranComunicaciones/sesion2/main/public/logo-placeholder.png)
 
